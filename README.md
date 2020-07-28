@@ -24,6 +24,17 @@ A Light–weight CSS Preprocessor.
 - esm module compatible
 - tree-shaking-able
 
+> ### Fork addition
+>
+> Support for "useless" nesting:
+> 
+> ```
+> .classname {
+> 	color: white;
+> 	{ background-color: black; }
+> }
+> ```
+
 ## Abstract Syntax Structure
 
 ```js

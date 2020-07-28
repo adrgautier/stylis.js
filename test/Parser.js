@@ -927,4 +927,51 @@ describe('Parser', () => {
       `.user.foo.bar.barbar{color:orange;}`
     ].join(''))
   })
+  test('denested', () => {
+    expect(stylis(`
+      div {
+        h2 {
+          color:red;
+          {
+            color:blue;
+          }
+        }
+      }
+
+      .foo & {
+          width:1px;
+          &:hover {
+            color:black;
+          }
+          {
+            color:white;
+          }
+      }
+
+      h1, div {
+        color:red;
+        h2,
+        &:before {
+          color:red;
+        }
+        color:blue;
+        {
+          font-size:12px;
+        }
+        @media {
+          color:red;
+          {
+            color:blue;
+          }
+        }
+      }
+    `)).to.equal([
+      `.user div h2{color:red;color:blue;}`+
+      `.foo .user{width:1px;color:white;}`+
+      `.foo .user:hover{color:black;}`+
+      `.user h1,.user div{color:red;color:blue;font-size:12px;}`+
+      `.user h1 h2,.user div h2,.user h1:before,.user div:before{color:red;}`+
+      `@media{.user h1,.user div{color:red;color:blue;}}`
+    ].join(''))
+  })
 })

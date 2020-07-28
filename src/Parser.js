@@ -38,6 +38,8 @@ export function parse (value, root, parent, rule, rules, rulesets, pseudo, point
 	var children = rulesets
 	var reference = rule
 	var characters = type
+	var fakenest = 0
+
 
 	while (scanning)
 		switch (previous = character, character = next()) {
@@ -66,7 +68,11 @@ export function parse (value, root, parent, rule, rules, rulesets, pseudo, point
 			case 125 * variable: case 59: case 0:
 				switch (character) {
 					// \0 }
-					case 0: case 125: scanning = 0
+					case 0: case 125:
+						if(fakenest === 1)
+							fakenest = 0
+						else
+							scanning = 0
 					// ;
 					case 59 + offset:
 						if (property > 0)
@@ -76,6 +82,11 @@ export function parse (value, root, parent, rule, rules, rulesets, pseudo, point
 					case 59: characters += ';'
 					// { rule/at-rule
 					default:
+						if(characters === '') {
+							fakenest = 1
+							break
+						}
+
 						append(reference = ruleset(characters, root, parent, index, offset, rules, points, type, props = [], children = [], length), rulesets)
 
 						if (character === 123)
@@ -90,6 +101,7 @@ export function parse (value, root, parent, rule, rules, rulesets, pseudo, point
 									default:
 										parse(characters, reference, reference, reference, [''], children, length, points, children)
 								}
+						
 				}
 
 				index = offset = property = 0, variable = ampersand = 1, type = characters = '', length = pseudo
@@ -119,6 +131,8 @@ export function parse (value, root, parent, rule, rules, rulesets, pseudo, point
 					case 45:
 						if (previous === 45 && strlen(characters) == 2)
 							variable = 0
+						break
+
 				}
 		}
 
